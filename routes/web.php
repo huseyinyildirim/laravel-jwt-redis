@@ -32,4 +32,6 @@ Route::group(['prefix' => 'api'], function ($router) {
     Route::post("/document", 'DocumentController@create');
     Route::put("/document/{id}", 'DocumentController@update');
     Route::delete("/document/{id}", 'DocumentController@delete');
+
+    Route::get("/document/elastic", 'DocumentController@elastic');
 });

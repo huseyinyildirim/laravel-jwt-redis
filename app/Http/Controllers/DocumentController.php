@@ -5,12 +5,27 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Document;
+use Elasticsearch\ClientBuilder;
+use Elastica\Client as ElasticaClient;
 
 class DocumentController extends Controller
 {
+    protected $elasticSearch;
+    protected $elastica;
+
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => []]);
+        $this->middleware('auth:api', ['except' => ['elastic']]);
+
+        $this->elasticSearch = ClientBuilder::create()->build();
+
+        $elasticaConfig = [
+            'host' => 'localhost',
+            'port' => 9200,
+            'index' => 'documents'
+        ];
+
+        $this->elastica = new ElasticaClient($elasticaConfig);
     }
     public function create(Request $request)
     {
@@ -89,5 +104,19 @@ class DocumentController extends Controller
             ]);
 
         }
+    }
+
+    public function elastic() {
+        dump($this->elasticSearch);
+
+        $params = [
+            'index' => 'my_index',
+            'id'    => 'my_id',
+            'body'  => ['testField' => 'abc']
+        ];
+
+        $response = $this->elasticSearch->index($params);
+
+        dump($response);
     }
 }
